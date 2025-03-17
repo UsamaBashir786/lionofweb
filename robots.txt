@@ -1,0 +1,32 @@
+# Allow all search engines
+User-agent: *
+
+# Disallow sensitive directories
+Disallow: /admin/
+Disallow: /config/
+Disallow: /database/
+Disallow: /includes/
+Disallow: /core/
+
+# Disallow private files
+Disallow: /config.php
+Disallow: /database.php
+Disallow: /env.php
+Disallow: /README.md
+Disallow: /LICENSE
+
+# Block unnecessary files
+Disallow: /cgi-bin/
+Disallow: /temp/
+Disallow: /logs/
+Disallow: /cache/
+
+# Allow images to be crawled
+Allow: /images/
+
+# Allow CSS and JS files (important for indexing)
+Allow: /assets/css/
+Allow: /assets/js/
+
+# Sitemap URL (important for SEO)
+Sitemap: https://yourwebsite.com/sitemap.xml
