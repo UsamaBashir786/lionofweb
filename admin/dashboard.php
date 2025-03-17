@@ -1,16 +1,10 @@
 <?php
 // Include configuration files
 require_once '../config/config.php';
-require_once '../config/auth.php';
 require_once '../config/database.php';
 require_once '../includes/functions.php';
 
-// Check if user is logged in
-session_start();
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-  header("Location: login.php");
-  exit;
-}
+
 
 // Get dashboard statistics
 $total_articles = getTotalArticles($conn);
