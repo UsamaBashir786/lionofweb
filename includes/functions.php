@@ -855,21 +855,64 @@ function toggleUserStatus($conn, $id)
  * @param string $password User password (plain text)
  * @return array|bool User data or false if authentication fails
  */
-function authenticateUser($conn, $email, $password)
-{
-  $user = getUserByEmail($conn, $email);
-
-  if (!$user) {
-    return false;
+/**
+ * Authenticates a user by email and password
+ * 
+ * @param PDO $conn Database connection
+ * @param string $email User email
+ * @param string $password User password (plain text)
+ * @return array|bool User data array if authenticated, false otherwise
+ */
+function authenticateUser($conn, $email, $password) {
+  try {
+      error_log("Attempting to authenticate: " . $email);
+      
+      // First, check if the user exists
+      $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
+      $stmt->bindParam(':email', $email);
+      $stmt->execute();
+      
+      $user = $stmt->fetch();
+      
+      // Debug user retrieval
+      if (!$user) {
+          error_log("Authentication failed: No user found with email: " . $email);
+          return false;
+      }
+      
+      error_log("User found with ID: " . $user['id'] . ", Role: " . $user['role'] . ", Status: " . $user['status']);
+      
+      // Debug password verification
+      error_log("Stored password hash: " . substr($user['password'], 0, 20) . "...");
+      $password_verify_result = password_verify($password, $user['password']);
+      error_log("Password verification result: " . ($password_verify_result ? "SUCCESS" : "FAILED"));
+      
+      // Check if account is active
+      if ($user['status'] != 1) {
+          error_log("Authentication failed: User account is inactive");
+          return false;
+      }
+      
+      // Check password
+      if (!$password_verify_result) {
+          error_log("Authentication failed: Invalid password");
+          return false;
+      }
+      
+      // Authentication successful
+      error_log("Authentication successful for user: " . $email);
+      
+      // Update last login timestamp
+      $updateStmt = $conn->prepare("UPDATE users SET last_login = NOW() WHERE id = :id");
+      $updateStmt->bindParam(':id', $user['id']);
+      $updateStmt->execute();
+      
+      return $user;
+  } catch (PDOException $e) {
+      error_log("Database error during authentication: " . $e->getMessage());
+      return false;
+  } catch (Exception $e) {
+      error_log("General error during authentication: " . $e->getMessage());
+      return false;
   }
-
-  if (!password_verify($password, $user['password'])) {
-    return false;
-  }
-
-  if ($user['status'] != 1) {
-    return false;
-  }
-
-  return $user;
 }

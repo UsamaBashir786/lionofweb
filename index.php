@@ -1,3 +1,9 @@
+<?php
+// Include database connection
+require_once 'config/config.php';
+require_once 'config/database.php';
+require_once 'includes/functions.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -38,6 +44,7 @@
 
   <main class="container mx-auto px-4 mb-12">
     <!-- Featured Stories Section -->
+    <!-- Featured Stories Section -->
     <section id="featured" class="mb-12 pt-8">
       <div class="flex items-center justify-between mb-6" data-aos="fade-up" data-aos-duration="800">
         <h2 class="text-3xl font-bold text-gray-800">Featured Stories</h2>
@@ -45,47 +52,72 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Featured Story 1 -->
-        <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300" data-aos="fade-up" data-aos-delay="100" data-aos-duration="800">
-          <img src="/api/placeholder/400/240" alt="Featured Article" class="w-full h-48 object-cover">
-          <div class="p-5">
-            <span class="inline-block px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-semibold mb-3">Business</span>
-            <h3 class="text-xl font-bold mb-2 text-gray-800">Global Markets Show Resilience Amid Economic Uncertainty</h3>
-            <p class="text-gray-600 mb-4">Financial experts analyze the surprising stability of global markets despite ongoing economic challenges and policy changes.</p>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> 2 hours ago</span>
-              <a href="business.php" class="text-blue-600 hover:text-blue-800 font-medium transition duration-300">Read More</a>
-            </div>
-          </div>
-        </div>
+        <?php
+        // Get featured articles from the database
+        $featured_articles = $conn->prepare("
+      SELECT a.*, c.name as category_name, c.slug as category_slug 
+      FROM articles a
+      LEFT JOIN categories c ON a.category_id = c.id
+      WHERE a.featured = 1 AND a.status = 'published'
+      ORDER BY a.created_at DESC
+      LIMIT 3
+    ");
+        $featured_articles->execute();
 
-        <!-- Featured Story 2 -->
-        <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300" data-aos="fade-up" data-aos-delay="200" data-aos-duration="800">
-          <img src="/api/placeholder/400/240" alt="Featured Article" class="w-full h-48 object-cover">
-          <div class="p-5">
-            <span class="inline-block px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm font-semibold mb-3">Health</span>
-            <h3 class="text-xl font-bold mb-2 text-gray-800">New Research Reveals Benefits of Mediterranean Diet</h3>
-            <p class="text-gray-600 mb-4">Scientists discover additional health benefits linked to the Mediterranean diet, suggesting improved longevity and cognitive function.</p>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> 5 hours ago</span>
-              <a href="health.php" class="text-blue-600 hover:text-blue-800 font-medium transition duration-300">Read More</a>
-            </div>
-          </div>
-        </div>
+        // Check if we have any featured articles
+        if ($featured_articles->rowCount() > 0) {
+          $delay = 100;
+          while ($article = $featured_articles->fetch()) {
+            // Determine category color classes based on category name or id
+            $category_colors = [
+              'Business' => 'bg-blue-100 text-blue-600',
+              'Health' => 'bg-green-100 text-green-600',
+              'Technology' => 'bg-purple-100 text-purple-600',
+              'Sports' => 'bg-red-100 text-red-600',
+              'Education' => 'bg-yellow-100 text-yellow-600'
+              // Add more categories as needed
+            ];
 
-        <!-- Featured Story 3 -->
-        <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300" data-aos="fade-up" data-aos-delay="300" data-aos-duration="800">
-          <img src="/api/placeholder/400/240" alt="Featured Article" class="w-full h-48 object-cover">
-          <div class="p-5">
-            <span class="inline-block px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm font-semibold mb-3">Technology</span>
-            <h3 class="text-xl font-bold mb-2 text-gray-800">Next Generation Smartphones Set to Revolutionize Mobile Technology</h3>
-            <p class="text-gray-600 mb-4">Industry leaders prepare to unveil cutting-edge smartphone technology with enhanced AI capabilities and revolutionary features.</p>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> 8 hours ago</span>
-              <a href="mobile.php" class="text-blue-600 hover:text-blue-800 font-medium transition duration-300">Read More</a>
+            // Default color if category not found in the mapping
+            $color_class = $category_colors[$article['category_name']] ?? 'bg-gray-100 text-gray-600';
+
+            // Format date/time for display
+            $time_ago = timeAgo($article['created_at']);
+
+            // Generate article URL - assuming article.php with slug parameter
+            $article_url = "article.php?slug=" . $article['slug'];
+            $category_url = $article['category_slug'] . ".php";
+
+            // Image path with fallback
+            $image_path = !empty($article['image']) ? $article['image'] : "admin/";
+        ?>
+            <!-- Featured Story -->
+            <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300" data-aos="fade-up" data-aos-delay="<?php echo $delay; ?>" data-aos-duration="800">
+              <img src="<?php echo htmlspecialchars($image_path); ?>" alt="<?php echo htmlspecialchars($article['title']); ?>" class="w-full h-48 object-cover">
+              <div class="p-5">
+                <span class="inline-block px-3 py-1 <?php echo $color_class; ?> rounded-full text-sm font-semibold mb-3">
+                  <?php echo htmlspecialchars($article['category_name']); ?>
+                </span>
+                <h3 class="text-xl font-bold mb-2 text-gray-800"><?php echo htmlspecialchars($article['title']); ?></h3>
+                <p class="text-gray-600 mb-4"><?php echo limitWords(strip_tags($article['content']), 15); ?></p>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> <?php echo $time_ago; ?></span>
+                  <a href="<?php echo $article_url; ?>" class="text-blue-600 hover:text-blue-800 font-medium transition duration-300">Read More</a>
+                </div>
+              </div>
             </div>
+          <?php
+            $delay += 100;
+          }
+        } else {
+          // Fallback content if no featured articles exist
+          ?>
+          <div class="col-span-full text-center py-8">
+            <p class="text-gray-500">No featured stories available at the moment. Check back soon!</p>
           </div>
-        </div>
+        <?php
+        }
+        ?>
       </div>
     </section>
 
