@@ -1,11 +1,5 @@
 <?php
 session_start();
-
-// Include the functions file containing the page checker
-require_once 'functions.php';
-
-// Run the page checker before any HTML output
-checkPageExists();
 ?>
 <!-- Accessibility skip link -->
 <a href="#main-content" class="skip-link">Skip to content</a>

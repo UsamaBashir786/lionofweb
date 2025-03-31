@@ -3,8 +3,6 @@
 require_once 'config/config.php';
 require_once 'config/database.php';
 require_once 'includes/functions.php';
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -264,7 +262,7 @@ require_once 'includes/functions.php';
 
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         <!-- Category 1 -->
-        <a href="news-english.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="100" data-aos-duration="600">
+        <a href="under-development.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="100" data-aos-duration="600">
           <div class="bg-blue-100 text-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
             <i class="fas fa-newspaper text-2xl"></i>
           </div>

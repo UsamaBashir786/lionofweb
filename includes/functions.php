@@ -21,86 +21,6 @@ function generateRandomString($length = 10)
   return $randomString;
 }
 
-
-
-
-
-// =========================================================================
-
-
-
-
-function checkPageExists()
-{
-  // Skip for under-development.php page itself to avoid redirect loops
-  if (strpos($_SERVER['REQUEST_URI'], 'under-development.php') !== false) {
-    return true;
-  }
-
-  // Get the current request URI
-  $requestUri = $_SERVER['REQUEST_URI'];
-
-  // Remove query parameters if any
-  $requestPath = parse_url($requestUri, PHP_URL_PATH);
-
-  // Get the document root
-  $documentRoot = $_SERVER['DOCUMENT_ROOT'];
-
-  // Normalize the path
-  $requestPath = rtrim($requestPath, '/');
-  if (empty($requestPath)) {
-    $requestPath = '/';
-  }
-
-  // If it's the homepage, don't redirect
-  if ($requestPath == '/') {
-    return true;
-  }
-
-  // Define possible file extensions to check
-  $possibleExtensions = ['', '.php', '.html', '.htm'];
-
-  // Base physical path
-  $basePath = $documentRoot . $requestPath;
-
-  // Check if the requested path exists with any of the possible extensions
-  foreach ($possibleExtensions as $ext) {
-    if (file_exists($basePath . $ext)) {
-      return true; // Page exists
-    }
-  }
-
-  // Check if it's a directory with an index file
-  if (is_dir($basePath)) {
-    foreach (['index.php', 'index.html', 'index.htm'] as $indexFile) {
-      if (file_exists($basePath . '/' . $indexFile)) {
-        return true; // Directory with index file exists
-      }
-    }
-  }
-
-  // If we've reached here, the page doesn't exist
-  // Make sure to use an absolute path for the redirect
-  header("Location: /under-development.php");
-  exit;
-}
-
-
-
-
-
-
-
-
-// =========================================================================
-
-
-
-
-
-
-
-
 /**
  * Generate a slug from a string
  * 
@@ -943,57 +863,56 @@ function toggleUserStatus($conn, $id)
  * @param string $password User password (plain text)
  * @return array|bool User data array if authenticated, false otherwise
  */
-function authenticateUser($conn, $email, $password)
-{
+function authenticateUser($conn, $email, $password) {
   try {
-    error_log("Attempting to authenticate: " . $email);
-
-    // First, check if the user exists
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
-    $stmt->bindParam(':email', $email);
-    $stmt->execute();
-
-    $user = $stmt->fetch();
-
-    // Debug user retrieval
-    if (!$user) {
-      error_log("Authentication failed: No user found with email: " . $email);
-      return false;
-    }
-
-    error_log("User found with ID: " . $user['id'] . ", Role: " . $user['role'] . ", Status: " . $user['status']);
-
-    // Debug password verification
-    error_log("Stored password hash: " . substr($user['password'], 0, 20) . "...");
-    $password_verify_result = password_verify($password, $user['password']);
-    error_log("Password verification result: " . ($password_verify_result ? "SUCCESS" : "FAILED"));
-
-    // Check if account is active
-    if ($user['status'] != 1) {
-      error_log("Authentication failed: User account is inactive");
-      return false;
-    }
-
-    // Check password
-    if (!$password_verify_result) {
-      error_log("Authentication failed: Invalid password");
-      return false;
-    }
-
-    // Authentication successful
-    error_log("Authentication successful for user: " . $email);
-
-    // Update last login timestamp
-    $updateStmt = $conn->prepare("UPDATE users SET last_login = NOW() WHERE id = :id");
-    $updateStmt->bindParam(':id', $user['id']);
-    $updateStmt->execute();
-
-    return $user;
+      error_log("Attempting to authenticate: " . $email);
+      
+      // First, check if the user exists
+      $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
+      $stmt->bindParam(':email', $email);
+      $stmt->execute();
+      
+      $user = $stmt->fetch();
+      
+      // Debug user retrieval
+      if (!$user) {
+          error_log("Authentication failed: No user found with email: " . $email);
+          return false;
+      }
+      
+      error_log("User found with ID: " . $user['id'] . ", Role: " . $user['role'] . ", Status: " . $user['status']);
+      
+      // Debug password verification
+      error_log("Stored password hash: " . substr($user['password'], 0, 20) . "...");
+      $password_verify_result = password_verify($password, $user['password']);
+      error_log("Password verification result: " . ($password_verify_result ? "SUCCESS" : "FAILED"));
+      
+      // Check if account is active
+      if ($user['status'] != 1) {
+          error_log("Authentication failed: User account is inactive");
+          return false;
+      }
+      
+      // Check password
+      if (!$password_verify_result) {
+          error_log("Authentication failed: Invalid password");
+          return false;
+      }
+      
+      // Authentication successful
+      error_log("Authentication successful for user: " . $email);
+      
+      // Update last login timestamp
+      $updateStmt = $conn->prepare("UPDATE users SET last_login = NOW() WHERE id = :id");
+      $updateStmt->bindParam(':id', $user['id']);
+      $updateStmt->execute();
+      
+      return $user;
   } catch (PDOException $e) {
-    error_log("Database error during authentication: " . $e->getMessage());
-    return false;
+      error_log("Database error during authentication: " . $e->getMessage());
+      return false;
   } catch (Exception $e) {
-    error_log("General error during authentication: " . $e->getMessage());
-    return false;
+      error_log("General error during authentication: " . $e->getMessage());
+      return false;
   }
 }

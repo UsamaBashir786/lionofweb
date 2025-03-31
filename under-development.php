@@ -1,6 +1,3 @@
-<?php
-session_start();
-?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -80,9 +77,6 @@ session_start();
         <div class="flex flex-wrap justify-center gap-3 mt-4">
           <a href="index.php" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200">
             <i class="fas fa-home mr-2"></i> Homepage
-          </a>
-          <a href="news-english.php" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg transition-colors duration-200">
-            <i class="fas fa-newspaper mr-2"></i> Latest News
           </a>
           <a href="contact.php" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg transition-colors duration-200">
             <i class="fas fa-envelope mr-2"></i> Contact Us
