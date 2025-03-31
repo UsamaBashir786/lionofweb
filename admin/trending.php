@@ -356,6 +356,7 @@ if (isset($_SESSION['error_message'])) {
       color: #3B82F6;
     }
   </style>
+  <?php include 'includes/style.php' ?>
 </head>
 
 <body class="bg-gray-100 font-sans">

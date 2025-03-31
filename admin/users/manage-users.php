@@ -82,6 +82,7 @@ $users = getUsers($conn, $offset, $items_per_page, $role_filter, $status_filter,
       background-color: rgba(59, 130, 246, 0.1);
     }
   </style>
+  <?php include '../includes/style.php' ?>
 </head>
 
 <body class="bg-gray-100 font-sans">

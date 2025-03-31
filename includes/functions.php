@@ -30,10 +30,6 @@ function generateRandomString($length = 10)
 
 
 
-/**
- * Page checker function for Lion Of Web
- * Checks if the requested page exists and redirects to under-development.php if not
- */
 function checkPageExists()
 {
   // Skip for under-development.php page itself to avoid redirect loops
@@ -56,16 +52,16 @@ function checkPageExists()
     $requestPath = '/';
   }
 
+  // If it's the homepage, don't redirect
+  if ($requestPath == '/') {
+    return true;
+  }
+
   // Define possible file extensions to check
   $possibleExtensions = ['', '.php', '.html', '.htm'];
 
   // Base physical path
   $basePath = $documentRoot . $requestPath;
-
-  // Check if it's the homepage
-  if ($requestPath == '/') {
-    return true; // Assume homepage exists
-  }
 
   // Check if the requested path exists with any of the possible extensions
   foreach ($possibleExtensions as $ext) {
@@ -84,11 +80,10 @@ function checkPageExists()
   }
 
   // If we've reached here, the page doesn't exist
-  // Redirect to under-development.php
-  header("Location: under-development.php");
+  // Make sure to use an absolute path for the redirect
+  header("Location: /under-development.php");
   exit;
 }
-
 
 
 
