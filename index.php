@@ -138,74 +138,120 @@ require_once 'includes/functions.php';
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Latest News Column 1 -->
         <div>
-          <!-- News Item 1 -->
-          <div class="flex gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300" data-aos="fade-right" data-aos-delay="100" data-aos-duration="800">
-            <img src="/api/placeholder/120/120" alt="News Thumbnail" class="w-24 h-24 object-cover rounded">
-            <div>
-              <span class="inline-block px-2 py-1 bg-red-100 text-red-600 rounded-full text-xs font-semibold mb-2">Breaking</span>
-              <h3 class="font-bold text-gray-800 mb-1">National Cricket Team Secures Historic Victory Against Rivals</h3>
-              <p class="text-gray-600 text-sm">The national team has achieved a remarkable win in the international tournament.</p>
-              <a href="sports.php" class="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2 inline-block transition duration-300">Read More</a>
-            </div>
-          </div>
+          <?php
+          // Get latest 3 articles for the left column
+          $latest_articles1 = $conn->prepare("
+        SELECT a.*, c.name as category_name, c.slug as category_slug 
+        FROM articles a
+        LEFT JOIN categories c ON a.category_id = c.id
+        WHERE a.status = 'published'
+        ORDER BY a.created_at DESC
+        LIMIT 0, 3
+      ");
+          $latest_articles1->execute();
 
-          <!-- News Item 2 -->
-          <div class="flex gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300" data-aos="fade-right" data-aos-delay="200" data-aos-duration="800">
-            <img src="/api/placeholder/120/120" alt="News Thumbnail" class="w-24 h-24 object-cover rounded">
-            <div>
-              <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-600 rounded-full text-xs font-semibold mb-2">Finance</span>
-              <h3 class="font-bold text-gray-800 mb-1">Cryptocurrency Market Shows Signs of Recovery</h3>
-              <p class="text-gray-600 text-sm">Major cryptocurrencies experience significant growth after months of volatility.</p>
-              <a href="crypto.php" class="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2 inline-block transition duration-300">Read More</a>
-            </div>
-          </div>
+          // Category colors mapping
+          $category_colors = [
+            'Breaking' => 'bg-red-100 text-red-600',
+            'Finance' => 'bg-yellow-100 text-yellow-600',
+            'Education' => 'bg-blue-100 text-blue-600',
+            'Health' => 'bg-green-100 text-green-600',
+            'Fashion' => 'bg-pink-100 text-pink-600',
+            'Technology' => 'bg-purple-100 text-purple-600',
+            'Sports' => 'bg-red-100 text-red-600',
+            'Business' => 'bg-blue-100 text-blue-600'
+          ];
 
-          <!-- News Item 3 -->
-          <div class="flex gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300" data-aos="fade-right" data-aos-delay="300" data-aos-duration="800">
-            <img src="/api/placeholder/120/120" alt="News Thumbnail" class="w-24 h-24 object-cover rounded">
-            <div>
-              <span class="inline-block px-2 py-1 bg-blue-100 text-blue-600 rounded-full text-xs font-semibold mb-2">Education</span>
-              <h3 class="font-bold text-gray-800 mb-1">New Scholarship Program Launched for STEM Students</h3>
-              <p class="text-gray-600 text-sm">Government announces major funding initiative to support education in science and technology fields.</p>
-              <a href="education.php" class="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2 inline-block transition duration-300">Read More</a>
+          if ($latest_articles1->rowCount() > 0) {
+            $delay = 100;
+            while ($article = $latest_articles1->fetch()) {
+              // Get color class for the category
+              $color_class = $category_colors[$article['category_name']] ?? 'bg-gray-100 text-gray-600';
+
+              // Get article image or use placeholder
+              $image_path = !empty($article['image']) ? $article['image'] : "/api/placeholder/120/120";
+
+              // Create article URL
+              $article_url = "article.php?slug=" . $article['slug'];
+
+              // Get short excerpt for preview
+              $excerpt = limitWords(strip_tags($article['content']), 15);
+          ?>
+              <!-- News Item -->
+              <div class="flex gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300" data-aos="fade-right" data-aos-delay="<?php echo $delay; ?>" data-aos-duration="800">
+                <img src="<?php echo htmlspecialchars($image_path); ?>" alt="<?php echo htmlspecialchars($article['title']); ?>" class="w-24 h-24 object-cover rounded">
+                <div>
+                  <span class="inline-block px-2 py-1 <?php echo $color_class; ?> rounded-full text-xs font-semibold mb-2"><?php echo htmlspecialchars($article['category_name']); ?></span>
+                  <h3 class="font-bold text-gray-800 mb-1"><?php echo htmlspecialchars($article['title']); ?></h3>
+                  <p class="text-gray-600 text-sm"><?php echo $excerpt; ?></p>
+                  <a href="<?php echo $article_url; ?>" class="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2 inline-block transition duration-300">Read More</a>
+                </div>
+              </div>
+            <?php
+              $delay += 100;
+            }
+          } else {
+            // If no articles found, show a message
+            ?>
+            <div class="flex gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm">
+              <p class="text-gray-600 text-sm">No recent articles available at the moment.</p>
             </div>
-          </div>
+          <?php
+          }
+          ?>
         </div>
 
         <!-- Latest News Column 2 -->
         <div>
-          <!-- News Item 4 -->
-          <div class="flex gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300" data-aos="fade-left" data-aos-delay="100" data-aos-duration="800">
-            <img src="/api/placeholder/120/120" alt="News Thumbnail" class="w-24 h-24 object-cover rounded">
-            <div>
-              <span class="inline-block px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs font-semibold mb-2">Health</span>
-              <h3 class="font-bold text-gray-800 mb-1">Experts Share Tips for Maintaining Mental Health</h3>
-              <p class="text-gray-600 text-sm">Healthcare professionals offer practical advice for managing stress and improving well-being.</p>
-              <a href="health.php" class="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2 inline-block transition duration-300">Read More</a>
-            </div>
-          </div>
+          <?php
+          // Get next 3 articles for the right column
+          $latest_articles2 = $conn->prepare("
+        SELECT a.*, c.name as category_name, c.slug as category_slug 
+        FROM articles a
+        LEFT JOIN categories c ON a.category_id = c.id
+        WHERE a.status = 'published'
+        ORDER BY a.created_at DESC
+        LIMIT 3, 3
+      ");
+          $latest_articles2->execute();
 
-          <!-- News Item 5 -->
-          <div class="flex gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300" data-aos="fade-left" data-aos-delay="200" data-aos-duration="800">
-            <img src="/api/placeholder/120/120" alt="News Thumbnail" class="w-24 h-24 object-cover rounded">
-            <div>
-              <span class="inline-block px-2 py-1 bg-pink-100 text-pink-600 rounded-full text-xs font-semibold mb-2">Fashion</span>
-              <h3 class="font-bold text-gray-800 mb-1">Sustainable Fashion Trends Gaining Popularity</h3>
-              <p class="text-gray-600 text-sm">Eco-friendly clothing options see increased consumer demand across global markets.</p>
-              <a href="women.php" class="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2 inline-block transition duration-300">Read More</a>
-            </div>
-          </div>
+          if ($latest_articles2->rowCount() > 0) {
+            $delay = 100;
+            while ($article = $latest_articles2->fetch()) {
+              // Get color class for the category
+              $color_class = $category_colors[$article['category_name']] ?? 'bg-gray-100 text-gray-600';
 
-          <!-- News Item 6 -->
-          <div class="flex gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300" data-aos="fade-left" data-aos-delay="300" data-aos-duration="800">
-            <img src="/api/placeholder/120/120" alt="News Thumbnail" class="w-24 h-24 object-cover rounded">
-            <div>
-              <span class="inline-block px-2 py-1 bg-purple-100 text-purple-600 rounded-full text-xs font-semibold mb-2">Technology</span>
-              <h3 class="font-bold text-gray-800 mb-1">Latest Mobile Phone Reviews: Top Picks for 2025</h3>
-              <p class="text-gray-600 text-sm">Comprehensive analysis of the newest smartphone models hitting the market this year.</p>
-              <a href="mobile.php" class="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2 inline-block transition duration-300">Read More</a>
+              // Get article image or use placeholder
+              $image_path = !empty($article['image']) ? $article['image'] : "/api/placeholder/120/120";
+
+              // Create article URL
+              $article_url = "article.php?slug=" . $article['slug'];
+
+              // Get short excerpt for preview
+              $excerpt = limitWords(strip_tags($article['content']), 15);
+          ?>
+              <!-- News Item -->
+              <div class="flex gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300" data-aos="fade-left" data-aos-delay="<?php echo $delay; ?>" data-aos-duration="800">
+                <img src="<?php echo htmlspecialchars($image_path); ?>" alt="<?php echo htmlspecialchars($article['title']); ?>" class="w-24 h-24 object-cover rounded">
+                <div>
+                  <span class="inline-block px-2 py-1 <?php echo $color_class; ?> rounded-full text-xs font-semibold mb-2"><?php echo htmlspecialchars($article['category_name']); ?></span>
+                  <h3 class="font-bold text-gray-800 mb-1"><?php echo htmlspecialchars($article['title']); ?></h3>
+                  <p class="text-gray-600 text-sm"><?php echo $excerpt; ?></p>
+                  <a href="<?php echo $article_url; ?>" class="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2 inline-block transition duration-300">Read More</a>
+                </div>
+              </div>
+            <?php
+              $delay += 100;
+            }
+          } else {
+            // If no articles found, show a message
+            ?>
+            <div class="flex gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm">
+              <p class="text-gray-600 text-sm">No additional articles available at the moment.</p>
             </div>
-          </div>
+          <?php
+          }
+          ?>
         </div>
       </div>
     </section>
