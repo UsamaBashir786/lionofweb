@@ -298,14 +298,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 
-// Get all trending items for the table
+// Get active trending items
 $trending_items = [];
 try {
-  $stmt = $conn->query("SELECT * FROM trending_items ORDER BY position ASC");
+  $stmt = $conn->prepare("SELECT * FROM trending_items WHERE active = 1 ORDER BY position ASC LIMIT 4");
+  $stmt->execute();
   $trending_items = $stmt->fetchAll();
 } catch (PDOException $e) {
-  $error_message = "Error fetching trending items: " . $e->getMessage();
+  error_log("Error fetching trending items: " . $e->getMessage());
 }
+
 
 // Handle session messages
 if (isset($_SESSION['success_message'])) {
@@ -573,7 +575,7 @@ if (isset($_SESSION['error_message'])) {
                       <label for="link_url" class="block text-sm font-medium text-gray-700">Link URL</label>
                       <div class="mt-1">
                         <input type="text" name="link_url" id="link_url" value="<?php echo htmlspecialchars($link_url); ?>"
-                          class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" required>
+                          class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                       </div>
                       <p class="mt-1 text-xs text-gray-500">Page link (example: trending-detail.php?id=1) or full URL. Use # for placeholder links</p>
                     </div>
