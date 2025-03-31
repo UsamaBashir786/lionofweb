@@ -366,45 +366,7 @@ require_once 'includes/functions.php';
     </section>
 
     <!-- Trending Section -->
-    <section class="mb-12">
-      <h2 class="text-3xl font-bold text-gray-800 mb-6" data-aos="fade-up" data-aos-duration="800">Trending Now</h2>
-
-      <div class="bg-white rounded-lg shadow-md p-6" data-aos="fade-up" data-aos-duration="1000">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <!-- Trending Item 1 -->
-          <div class="border-b md:border-b-0 md:border-r border-gray-200 pb-4 md:pb-0 md:pr-4" data-aos="fade-right" data-aos-delay="100" data-aos-duration="800">
-            <span class="text-4xl font-bold text-blue-600">01</span>
-            <h3 class="font-bold text-gray-800 mt-2 mb-1">Major Currency Fluctuations Impact Global Markets</h3>
-            <p class="text-gray-600 text-sm">Financial analysts predict lasting effects on international trade.</p>
-            <a href="currency.php" class="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2 inline-block transition duration-300">Read More</a>
-          </div>
-
-          <!-- Trending Item 2 -->
-          <div class="border-b md:border-b-0 md:border-r border-gray-200 pb-4 md:pb-0 md:pr-4" data-aos="fade-right" data-aos-delay="200" data-aos-duration="800">
-            <span class="text-4xl font-bold text-blue-600">02</span>
-            <h3 class="font-bold text-gray-800 mt-2 mb-1">New Electric Vehicle Models Set to Transform Auto Industry</h3>
-            <p class="text-gray-600 text-sm">Innovations in battery technology promise extended range capabilities.</p>
-            <a href="autos.php" class="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2 inline-block transition duration-300">Read More</a>
-          </div>
-
-          <!-- Trending Item 3 -->
-          <div class="border-b md:border-b-0 md:border-r border-gray-200 pb-4 md:pb-0 md:pr-4" data-aos="fade-left" data-aos-delay="200" data-aos-duration="800">
-            <span class="text-4xl font-bold text-blue-600">03</span>
-            <h3 class="font-bold text-gray-800 mt-2 mb-1">Nationwide Education Reform Initiative Announced</h3>
-            <p class="text-gray-600 text-sm">Comprehensive changes aim to address learning gaps and improve outcomes.</p>
-            <a href="education.php" class="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2 inline-block transition duration-300">Read More</a>
-          </div>
-
-          <!-- Trending Item 4 -->
-          <div data-aos="fade-left" data-aos-delay="100" data-aos-duration="800">
-            <span class="text-4xl font-bold text-blue-600">04</span>
-            <h3 class="font-bold text-gray-800 mt-2 mb-1">International Cricket Tournament Reaches Final Stage</h3>
-            <p class="text-gray-600 text-sm">Top teams compete for championship title in sold-out stadium.</p>
-            <a href="sports.php" class="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2 inline-block transition duration-300">Read More</a>
-          </div>
-        </div>
-      </div>
-    </section>
+    <?php include 'includes/trending-section.php'; ?>
 
     <!-- Newsletter Section -->
     <section class="bg-blue-600 text-white rounded-lg p-8 mb-12" data-aos="fade-up" data-aos-duration="1000">
