@@ -270,7 +270,7 @@ require_once 'includes/functions.php';
         </a>
 
         <!-- Category 2 -->
-        <a href="news-urdu.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="150" data-aos-duration="600">
+        <a href="under-development.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="150" data-aos-duration="600">
           <div class="bg-green-100 text-green-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
             <i class="fas fa-language text-2xl"></i>
           </div>
@@ -278,7 +278,7 @@ require_once 'includes/functions.php';
         </a>
 
         <!-- Category 3 -->
-        <a href="business.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="200" data-aos-duration="600">
+        <a href="under-development.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="200" data-aos-duration="600">
           <div class="bg-yellow-100 text-yellow-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
             <i class="fas fa-chart-line text-2xl"></i>
           </div>
@@ -286,7 +286,7 @@ require_once 'includes/functions.php';
         </a>
 
         <!-- Category 4 -->
-        <a href="sports.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="250" data-aos-duration="600">
+        <a href="under-development.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="250" data-aos-duration="600">
           <div class="bg-red-100 text-red-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
             <i class="fas fa-futbol text-2xl"></i>
           </div>
@@ -294,7 +294,7 @@ require_once 'includes/functions.php';
         </a>
 
         <!-- Category 5 -->
-        <a href="health.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="300" data-aos-duration="600">
+        <a href="under-development.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="300" data-aos-duration="600">
           <div class="bg-green-100 text-green-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
             <i class="fas fa-heartbeat text-2xl"></i>
           </div>
@@ -302,7 +302,7 @@ require_once 'includes/functions.php';
         </a>
 
         <!-- Category 6 -->
-        <a href="technology.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="350" data-aos-duration="600">
+        <a href="under-development.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="350" data-aos-duration="600">
           <div class="bg-purple-100 text-purple-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
             <i class="fas fa-mobile-alt text-2xl"></i>
           </div>
@@ -310,7 +310,7 @@ require_once 'includes/functions.php';
         </a>
 
         <!-- Category 7 -->
-        <a href="education.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="400" data-aos-duration="600">
+        <a href="under-development.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="400" data-aos-duration="600">
           <div class="bg-blue-100 text-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
             <i class="fas fa-graduation-cap text-2xl"></i>
           </div>
@@ -318,7 +318,7 @@ require_once 'includes/functions.php';
         </a>
 
         <!-- Category 8 -->
-        <a href="jobs.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="450" data-aos-duration="600">
+        <a href="under-development.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="450" data-aos-duration="600">
           <div class="bg-green-100 text-green-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
             <i class="fas fa-briefcase text-2xl"></i>
           </div>
@@ -326,7 +326,7 @@ require_once 'includes/functions.php';
         </a>
 
         <!-- Category 9 -->
-        <a href="eshop.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="500" data-aos-duration="600">
+        <a href="under-development.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="500" data-aos-duration="600">
           <div class="bg-pink-100 text-pink-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
             <i class="fas fa-shopping-cart text-2xl"></i>
           </div>
@@ -334,7 +334,7 @@ require_once 'includes/functions.php';
         </a>
 
         <!-- Category 10 -->
-        <a href="crypto.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="550" data-aos-duration="600">
+        <a href="under-development.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="550" data-aos-duration="600">
           <div class="bg-yellow-100 text-yellow-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
             <i class="fab fa-bitcoin text-2xl"></i>
           </div>
@@ -342,7 +342,7 @@ require_once 'includes/functions.php';
         </a>
 
         <!-- Category 11 -->
-        <a href="travel.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="600" data-aos-duration="600">
+        <a href="under-development.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="600" data-aos-duration="600">
           <div class="bg-blue-100 text-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
             <i class="fas fa-plane text-2xl"></i>
           </div>
@@ -350,7 +350,7 @@ require_once 'includes/functions.php';
         </a>
 
         <!-- Category 12 -->
-        <a href="islam.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="650" data-aos-duration="600">
+        <a href="under-development.php" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md text-center transition duration-300" data-aos="zoom-in" data-aos-delay="650" data-aos-duration="600">
           <div class="bg-green-100 text-green-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
             <i class="fas fa-mosque text-2xl"></i>
           </div>
