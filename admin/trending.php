@@ -163,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   } elseif (empty($description)) {
     $error_message = "Description is required.";
   } elseif (empty($link_url)) {
-    $error_message = "Link URL is required.";
+    $link_url = "trending-detail.php?id={last_inserted_id}";
   } elseif (!filter_var($link_url, FILTER_VALIDATE_URL) && $link_url !== '#' && !strpos($link_url, '.php')) {
     $error_message = "Please enter a valid URL or page link (.php).";
   } elseif ($position < 1) {
@@ -282,9 +282,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           // Clear form values on success for new items
           if (!$is_edit_mode) {
             $position = $next_position + 1;
+            $last_inserted_id = $conn->lastInsertId();
             $title = $description = $content = $author = $link_url = '';
             $image = $featured_image = $meta_keywords = $meta_description = '';
             $publish_date = date('Y-m-d');
+            // Update the link_url with the actual ID
+            $update_stmt = $conn->prepare("UPDATE trending_items SET link_url = ? WHERE id = ?");
+            $update_stmt->execute(["trending-detail.php?id=" . $last_inserted_id, $last_inserted_id]);
             $active = 1;
             $trending_id = 0;
           }
