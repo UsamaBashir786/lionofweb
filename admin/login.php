@@ -1,13 +1,60 @@
 <?php
+// Start session
+session_start();
 
+// Include required files
 require_once '../config/config.php';
 require_once '../config/database.php';
-require_once '../includes/functions.php';
 
-// Check if user is already logged in
-if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
-    header("Location: dashboard.php");
-    exit;
+// Clear any existing session data
+$_SESSION = array();
+
+// Set login credentials
+$email = "admin@test.com";
+$password = "password";
+
+echo "<h2>Direct Login Attempt</h2>";
+
+try {
+    // Get the user directly from the database
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
+    $stmt->bindParam(':email', $email);
+    $stmt->execute();
+    $user = $stmt->fetch();
+    
+    if (!$user) {
+        echo "Error: User not found<br>";
+        exit;
+    }
+    
+    echo "User found: " . $user['name'] . " (ID: " . $user['id'] . ")<br>";
+    echo "Role: " . $user['role'] . "<br>";
+    echo "Status: " . $user['status'] . "<br>";
+    
+    // Verify password
+    if (!password_verify($password, $user['password'])) {
+        echo "Error: Password verification failed<br>";
+        exit;
+    }
+    
+    echo "Password verification successful<br>";
+    
+    // Set session variables directly
+    $_SESSION['admin_logged_in'] = true;
+    $_SESSION['user_id'] = $user['id'];
+    $_SESSION['user_name'] = $user['name'];
+    $_SESSION['user_email'] = $user['email'];
+    $_SESSION['user_role'] = $user['role'];
+    $_SESSION['user_avatar'] = $user['avatar'] ?? '';
+    
+    echo "Session variables set:<br>";
+    echo "admin_logged_in: " . ($_SESSION['admin_logged_in'] ? 'true' : 'false') . "<br>";
+    echo "user_role: " . $_SESSION['user_role'] . "<br>";
+    
+    echo "<p>Login successful! <a href='dashboard.php'>Go to Dashboard</a></p>";
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "<br>";
 }
 ?>
 

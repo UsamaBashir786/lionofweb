@@ -1,8 +1,35 @@
 <?php
+
+// Start session and check authentication
+session_start();
+
+// Debug session status
+error_log("Dashboard.php - Session status: " . (session_status() === PHP_SESSION_ACTIVE ? 'active' : 'inactive'));
+error_log("Dashboard.php - Admin logged in: " . (isset($_SESSION['admin_logged_in']) ? ($_SESSION['admin_logged_in'] ? 'true' : 'false') : 'not set'));
+error_log("Dashboard.php - User role: " . (isset($_SESSION['user_role']) ? $_SESSION['user_role'] : 'not set'));
+
+// Check if user is logged in
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+  error_log("Dashboard.php - Access denied: admin_logged_in check failed");
+  header("Location: login.php");
+  exit;
+}
+
+// Check if user has admin or editor role
+if (!isset($_SESSION['user_role']) || ($_SESSION['user_role'] !== 'admin' && $_SESSION['user_role'] !== 'editor')) {
+  error_log("Dashboard.php - Access denied: role check failed");
+  header("Location: login.php");
+  exit;
+}
+
+error_log("Dashboard.php - Access granted for user: " . $_SESSION['user_name']);
+
 // Include configuration files
 require_once '../config/config.php';
 require_once '../config/database.php';
 require_once '../includes/functions.php';
+
+// Rest of your dashboard code continues...
 
 
 

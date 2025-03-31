@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $status = $_POST['status'];
   $featured = isset($_POST['featured']) ? 1 : 0;
   $breaking = isset($_POST['breaking']) ? 1 : 0;
-  $author_id = $_SESSION['admin_id']; // Current logged in admin
+  $author_id = $_SESSION['user_id']; // Current logged in admin
 
   // Upload image if provided
   $image_path = '';
