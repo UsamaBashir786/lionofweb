@@ -1,0 +1,33 @@
+[2025-04-01 07:56:10] Incoming POST data: Array
+(
+    [article_id] => 11
+    [name] => Francesca Good
+    [email] => new@gmail.com
+    [comment] => Enim corporis et nec
+)
+
+[2025-04-01 07:56:10] Processed Inputs - Article ID: 11, Slug: , Name: Francesca Good, Email: new@gmail.com
+[2025-04-01 07:56:10] Comment inserted successfully. Rows affected: 1
+[2025-04-01 07:56:10] Comment count updated successfully.
+[2025-04-01 07:56:55] Incoming POST data: Array
+(
+    [article_id] => 11
+    [name] => Danielle Weiss
+    [email] => miberyna@mailinator.com
+    [comment] => Vel enim sed nobis e
+)
+
+[2025-04-01 07:56:55] Processed Inputs - Article ID: 11, Slug: , Name: Danielle Weiss, Email: miberyna@mailinator.com
+[2025-04-01 07:56:55] Comment inserted successfully. Rows affected: 1
+[2025-04-01 07:56:55] Comment count updated successfully.
+[2025-04-01 07:57:38] Incoming POST data: Array
+(
+    [article_id] => 11
+    [name] => Thor Morris
+    [email] => wugi@mailinator.com
+    [comment] => Exercitation quis qu
+)
+
+[2025-04-01 07:57:38] Processed Inputs - Article ID: 11, Slug: , Name: Thor Morris, Email: wugi@mailinator.com
+[2025-04-01 07:57:38] Comment inserted successfully. Rows affected: 1
+[2025-04-01 07:57:38] Comment count updated successfully.

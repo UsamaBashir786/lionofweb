@@ -32,6 +32,18 @@ require_once '../includes/functions.php';
 // Rest of your dashboard code continues...
 
 
+function getTotalUsers($conn) {
+  try {
+      $stmt = $conn->prepare("SELECT COUNT(*) as total_users FROM users");
+      $stmt->execute();
+      $result = $stmt->fetch(PDO::FETCH_ASSOC);
+      return $result['total_users'] ?? 0;
+  } catch (PDOException $e) {
+      // Log the error
+      error_log("Error getting total users: " . $e->getMessage());
+      return 0;
+  }
+}
 
 // Get dashboard statistics
 $total_articles = getTotalArticles($conn);

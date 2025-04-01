@@ -35,11 +35,18 @@ try {
   // Get article data
   $article = $stmt->fetch();
 
-  // Log article view
-  logArticleView($conn, $article['id']);
+  // Increment view count
+  $update_view_stmt = $conn->prepare("
+    UPDATE articles 
+    SET views = views + 1, 
+        view_count = view_count + 1 
+    WHERE id = :article_id
+  ");
+  $update_view_stmt->bindParam(':article_id', $article['id'], PDO::PARAM_INT);
+  $update_view_stmt->execute();
 
-  // Get article view count
-  $view_count = getArticleViewCount($conn, $article['id']);
+  // Get article view count (using the new view_count column)
+  $view_count = $article['view_count'] ?? 0;
 
   // Format dates
   $published_date = formatDate($article['publish_date'] ?? $article['created_at']);
@@ -333,23 +340,49 @@ $social_image = !empty($article['social_image']) ? $article['social_image'] : $a
           </button>
         </form>
 
-        <!-- Placeholder for comments - in a real application, you would load comments from database -->
-        <div class="space-y-6">
-          <p class="text-gray-500 text-center py-4">No comments yet. Be the first to comment!</p>
+        <?php
+        // Fetch comments for this article
+        try {
+          $comments_stmt = $conn->prepare("
+        SELECT * FROM comments 
+        WHERE article_id = :article_id 
+        AND status = 'approved' 
+        ORDER BY created_at DESC
+    ");
+          $comments_stmt->bindParam(':article_id', $article['id'], PDO::PARAM_INT);
+          $comments_stmt->execute();
+          $comments = $comments_stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+          $comments = [];
+          error_log("Error fetching comments: " . $e->getMessage());
+        }
+        ?>
 
-          <!-- Example Comment (hidden, just for structure) -->
-          <div class="border-b border-gray-200 pb-6 hidden">
-            <div class="flex items-center mb-2">
-              <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 mr-3">
-                <i class="fas fa-user"></i>
+        <!-- Comments List -->
+        <div class="space-y-6">
+          <?php if (empty($comments)): ?>
+            <p class="text-gray-500 text-center py-4">No comments yet. Be the first to comment!</p>
+          <?php else: ?>
+            <?php foreach ($comments as $comment): ?>
+              <div class="border-b border-gray-200 pb-6">
+                <div class="flex items-center mb-2">
+                  <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 mr-3">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold"><?php echo htmlspecialchars($comment['name']); ?></h4>
+                    <p class="text-sm text-gray-500">
+                      <?php
+                      $comment_date = new DateTime($comment['created_at']);
+                      echo timeAgo($comment_date->format('Y-m-d H:i:s'));
+                      ?>
+                    </p>
+                  </div>
+                </div>
+                <p class="text-gray-700"><?php echo htmlspecialchars($comment['comment_text']); ?></p>
               </div>
-              <div>
-                <h4 class="font-semibold">John Doe</h4>
-                <p class="text-sm text-gray-500">2 days ago</p>
-              </div>
-            </div>
-            <p class="text-gray-700">This is an example comment. Great article!</p>
-          </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </div>
       </div>
     </div>
