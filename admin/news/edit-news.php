@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $status = $_POST['status'];
   $featured = isset($_POST['featured']) ? 1 : 0;
   $breaking = isset($_POST['breaking']) ? 1 : 0;
-  
+
   // Additional fields
   $subtitle = trim($_POST['subtitle'] ?? '');
   $excerpt = trim($_POST['excerpt'] ?? '');
@@ -51,12 +51,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $source_url = trim($_POST['source_url'] ?? '');
   $publish_date = !empty($_POST['publish_date']) ? $_POST['publish_date'] : date('Y-m-d H:i:s');
   $tags = trim($_POST['tags'] ?? '');
-  
+
   // SEO fields
   $meta_title = trim($_POST['meta_title'] ?? '');
   $meta_description = trim($_POST['meta_description'] ?? '');
   $meta_keywords = trim($_POST['meta_keywords'] ?? '');
-  
+
   // Social media
   $social_title = trim($_POST['social_title'] ?? '');
   $social_description = trim($_POST['social_description'] ?? '');
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $error_message = "File is not an image.";
     }
   }
-  
+
   // Upload social image if provided
   $social_image = $article['social_image'] ?? ''; // Keep existing social image by default
   if (isset($_FILES['social_image']) && $_FILES['social_image']['error'] == 0) {
@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!file_exists($upload_dir)) {
       mkdir($upload_dir, 0755, true);
     }
-    
+
     $image_name = time() . '_social_' . basename($_FILES['social_image']['name']);
     $target_file = $upload_dir . $image_name;
 
@@ -118,14 +118,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (empty($error_message)) {
     // Update article in database
     $result = updateArticleEnhanced(
-      $conn, 
+      $conn,
       $article_id,
-      $title, 
-      $content, 
-      $category_id, 
-      $image_path, 
-      $status, 
-      $featured, 
+      $title,
+      $content,
+      $category_id,
+      $image_path,
+      $status,
+      $featured,
       $breaking,
       $subtitle,
       $excerpt,
@@ -184,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       border-left: 4px solid #3B82F6;
       background-color: rgba(59, 130, 246, 0.1);
     }
-    
+
     .tab-active {
       border-bottom: 2px solid #3B82F6;
       color: #3B82F6;
@@ -323,22 +323,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </select>
                       </div>
                     </div>
-                    
+
                     <div class="sm:col-span-3">
                       <label for="publish_date" class="block text-sm font-medium text-gray-700">Publish Date & Time</label>
                       <div class="mt-1">
-                        <input type="datetime-local" name="publish_date" id="publish_date" 
+                        <input type="datetime-local" name="publish_date" id="publish_date"
                           value="<?php echo isset($article['publish_date']) ? date('Y-m-d\TH:i', strtotime($article['publish_date'])) : date('Y-m-d\TH:i', strtotime($article['created_at'])); ?>"
                           class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                       </div>
                       <p class="mt-1 text-xs text-gray-500">When scheduled, article will be published at this time</p>
                     </div>
-                    
+
                     <div class="sm:col-span-3">
                       <label for="tags" class="block text-sm font-medium text-gray-700">Tags</label>
                       <div class="mt-1">
                         <input type="text" name="tags" id="tags" value="<?php echo isset($article['tags']) ? htmlspecialchars($article['tags']) : ''; ?>"
-                          placeholder="Tag1, Tag2, Tag3" 
+                          placeholder="Tag1, Tag2, Tag3"
                           class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                       </div>
                       <p class="mt-1 text-xs text-gray-500">Comma-separated list of tags</p>
@@ -385,7 +385,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       </div>
                       <p class="mt-1 text-xs text-gray-500">Recommended size: 1200 × 628 pixels</p>
                     </div>
-                    
+
                     <div class="sm:col-span-3">
                       <label for="source" class="block text-sm font-medium text-gray-700">Source Name</label>
                       <div class="mt-1">
@@ -394,7 +394,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       </div>
                       <p class="mt-1 text-xs text-gray-500">Original source of the content (if applicable)</p>
                     </div>
-                    
+
                     <div class="sm:col-span-3">
                       <label for="source_url" class="block text-sm font-medium text-gray-700">Source URL</label>
                       <div class="mt-1">
@@ -447,7 +447,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       </div>
                       <p class="mt-1 text-xs text-gray-500">A short summary of the article. If left empty, it will be automatically generated from the content.</p>
                     </div>
-                    
+
                     <div class="sm:col-span-6">
                       <label for="content" class="block text-sm font-medium text-gray-700">
                         Article Content
@@ -473,7 +473,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       </div>
                       <p class="mt-1 text-xs text-gray-500">Title tag for SEO. If left empty, the article title will be used.</p>
                     </div>
-                    
+
                     <div class="sm:col-span-6">
                       <label for="meta_description" class="block text-sm font-medium text-gray-700">
                         Meta Description
@@ -484,7 +484,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       </div>
                       <p class="mt-1 text-xs text-gray-500">Description for search engines. Recommended length: 150-160 characters.</p>
                     </div>
-                    
+
                     <div class="sm:col-span-6">
                       <label for="meta_keywords" class="block text-sm font-medium text-gray-700">
                         Meta Keywords
@@ -503,4 +503,121 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div id="social-tab" class="tab-content p-6 bg-white hidden">
                   <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                     <div class="sm:col-span-6">
-                      <label for="social_title" class="block text-sm font-medium text-gray
+                      <label for="social_title" class="block text-sm font-medium text-gray-700">
+                        Social Media Title
+                      </label>
+                      <div class="mt-1">
+                        <input type="text" name="social_title" id="social_title" value="<?php echo isset($article['social_title']) ? htmlspecialchars($article['social_title']) : ''; ?>"
+                          class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                      </div>
+                      <p class="mt-1 text-xs text-gray-500">Title optimized for social media sharing. If left empty, the article title will be used.</p>
+                    </div>
+
+                    <div class="sm:col-span-6">
+                      <label for="social_description" class="block text-sm font-medium text-gray-700">
+                        Social Media Description
+                      </label>
+                      <div class="mt-1">
+                        <textarea id="social_description" name="social_description" rows="3"
+                          class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"><?php echo isset($article['social_description']) ? htmlspecialchars($article['social_description']) : ''; ?></textarea>
+                      </div>
+                      <p class="mt-1 text-xs text-gray-500">Description optimized for social media sharing. If left empty, the meta description will be used.</p>
+                    </div>
+
+                    <div class="sm:col-span-6">
+                      <label for="social_image" class="block text-sm font-medium text-gray-700">
+                        Social Media Image
+                      </label>
+
+                      <?php if (!empty($article['social_image'])): ?>
+                        <div class="mt-2 mb-4">
+                          <div class="flex items-center">
+                            <div class="flex-shrink-0 h-16 w-24 bg-gray-100">
+                              <img class="h-16 w-24 object-cover" src="../../<?php echo htmlspecialchars($article['social_image']); ?>" alt="Current social image">
+                            </div>
+                            <div class="ml-4">
+                              <p class="text-sm text-gray-500">Current Social Image</p>
+                            </div>
+                          </div>
+                        </div>
+                      <?php endif; ?>
+
+                      <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                        <div class="space-y-1 text-center">
+                          <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48"
+                            aria-hidden="true">
+                            <path
+                              d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+                          <div class="flex text-sm text-gray-600">
+                            <label for="social-image-upload"
+                              class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                              <span>Upload a social image</span>
+                              <input id="social-image-upload" name="social_image" type="file" class="sr-only">
+                            </label>
+                            <p class="pl-1">or drag and drop</p>
+                          </div>
+                          <p class="text-xs text-gray-500">
+                            PNG, JPG, GIF up to 10MB
+                          </p>
+                        </div>
+                      </div>
+                      <p class="mt-1 text-xs text-gray-500">Recommended size for social media: 1200 × 630 pixels</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                  <a href="manage-news.php" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mr-2">
+                    Cancel
+                  </a>
+                  <button type="submit"
+                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Update Article
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const tabLinks = document.querySelectorAll('.tab-link');
+      const tabContents = document.querySelectorAll('.tab-content');
+
+      tabLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+
+          // Remove active class from all tabs
+          tabLinks.forEach(tabLink => {
+            tabLink.classList.remove('tab-active');
+            tabLink.classList.add('text-gray-500');
+          });
+
+          // Add active class to clicked tab
+          this.classList.add('tab-active');
+          this.classList.remove('text-gray-500');
+
+          // Hide all tab contents
+          tabContents.forEach(content => {
+            content.classList.add('hidden');
+          });
+
+          // Show the target tab content
+          const targetId = this.getAttribute('data-target');
+          document.getElementById(targetId).classList.remove('hidden');
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>
