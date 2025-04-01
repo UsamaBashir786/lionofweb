@@ -45,6 +45,172 @@ function generateSlug($string)
 }
 
 /**
+ * Add an article with enhanced fields
+ *
+ * @param PDO $conn Database connection
+ * @param string $title Article title
+ * @param string $content Article content
+ * @param int $category_id Category ID
+ * @param string $image Image path
+ * @param string $status Article status
+ * @param int $featured Featured flag
+ * @param int $breaking Breaking news flag
+ * @param int $author_id Author ID
+ * @param string $subtitle Article subtitle
+ * @param string $excerpt Article excerpt
+ * @param string $source Source name
+ * @param string $source_url Source URL
+ * @param string $publish_date Publish date and time
+ * @param string $tags Comma-separated tags
+ * @param string $meta_title Meta title
+ * @param string $meta_description Meta description
+ * @param string $meta_keywords Meta keywords
+ * @param string $social_title Social media title
+ * @param string $social_description Social media description
+ * @param string $social_image Social media image
+ * @return int|bool The article ID if successful, false otherwise
+ */
+function addArticleEnhanced($conn, $title, $content, $category_id, $image, $status, $featured, $breaking, $author_id, 
+                           $subtitle = '', $excerpt = '', $source = '', $source_url = '', $publish_date = '', 
+                           $tags = '', $meta_title = '', $meta_description = '', $meta_keywords = '', 
+                           $social_title = '', $social_description = '', $social_image = '') {
+    try {
+        // Generate slug from title
+        $slug = generateSlug($title);
+        
+        // Calculate reading time (rough estimate based on words)
+        $word_count = str_word_count(strip_tags($content));
+        $reading_time = ceil($word_count / 250); // Average reading speed: 250 words per minute
+        
+        // If excerpt is empty, generate from content
+        if (empty($excerpt)) {
+            $excerpt = generateExcerpt($content);
+        }
+        
+        // If meta title is empty, use article title
+        if (empty($meta_title)) {
+            $meta_title = $title;
+        }
+        
+        // If social title is empty, use meta title
+        if (empty($social_title)) {
+            $social_title = $meta_title;
+        }
+        
+        // If social description is empty, use meta description
+        if (empty($social_description) && !empty($meta_description)) {
+            $social_description = $meta_description;
+        } elseif (empty($social_description)) {
+            $social_description = $excerpt;
+        }
+        
+        // If publish date is empty, use current datetime
+        if (empty($publish_date)) {
+            $publish_date = date('Y-m-d H:i:s');
+        }
+        
+        $stmt = $conn->prepare("
+            INSERT INTO articles (
+                title, subtitle, slug, content, excerpt, category_id, image, source, source_url,
+                status, featured, breaking, author_id, publish_date, tags,
+                meta_title, meta_description, meta_keywords, 
+                social_title, social_description, social_image,
+                reading_time, created_at, updated_at
+            ) VALUES (
+                :title, :subtitle, :slug, :content, :excerpt, :category_id, :image, :source, :source_url,
+                :status, :featured, :breaking, :author_id, :publish_date, :tags,
+                :meta_title, :meta_description, :meta_keywords, 
+                :social_title, :social_description, :social_image,
+                :reading_time, NOW(), NOW()
+            )
+        ");
+
+        $stmt->bindParam(':title', $title);
+        $stmt->bindParam(':subtitle', $subtitle);
+        $stmt->bindParam(':slug', $slug);
+        $stmt->bindParam(':content', $content);
+        $stmt->bindParam(':excerpt', $excerpt);
+        $stmt->bindParam(':category_id', $category_id);
+        $stmt->bindParam(':image', $image);
+        $stmt->bindParam(':source', $source);
+        $stmt->bindParam(':source_url', $source_url);
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':featured', $featured);
+        $stmt->bindParam(':breaking', $breaking);
+        $stmt->bindParam(':author_id', $author_id);
+        $stmt->bindParam(':publish_date', $publish_date);
+        $stmt->bindParam(':tags', $tags);
+        $stmt->bindParam(':meta_title', $meta_title);
+        $stmt->bindParam(':meta_description', $meta_description);
+        $stmt->bindParam(':meta_keywords', $meta_keywords);
+        $stmt->bindParam(':social_title', $social_title);
+        $stmt->bindParam(':social_description', $social_description);
+        $stmt->bindParam(':social_image', $social_image);
+        $stmt->bindParam(':reading_time', $reading_time);
+
+        if ($stmt->execute()) {
+            $article_id = $conn->lastInsertId();
+            
+            // Also create a revision record for this initial version
+            $rev_stmt = $conn->prepare("
+                INSERT INTO article_revisions (
+                    article_id, editor_id, editor_name, title, content, change_summary
+                ) VALUES (
+                    :article_id, :editor_id, :editor_name, :title, :content, 'Initial version'
+                )
+            ");
+            
+            // Get editor name
+            $editor_name = '';
+            $user_stmt = $conn->prepare("SELECT name FROM users WHERE id = ?");
+            $user_stmt->execute([$author_id]);
+            $user = $user_stmt->fetch();
+            if ($user) {
+                $editor_name = $user['name'];
+            }
+            
+            $rev_stmt->bindParam(':article_id', $article_id);
+            $rev_stmt->bindParam(':editor_id', $author_id);
+            $rev_stmt->bindParam(':editor_name', $editor_name);
+            $rev_stmt->bindParam(':title', $title);
+            $rev_stmt->bindParam(':content', $content);
+            $rev_stmt->execute();
+            
+            return $article_id;
+        }
+        
+        return false;
+    } catch (PDOException $e) {
+        // Log error
+        error_log("Error adding article: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Generate excerpt from content
+ *
+ * @param string $content The article content
+ * @param int $length Maximum excerpt length
+ * @return string The generated excerpt
+ */
+function generateExcerpt($content, $length = 160) {
+    // Strip HTML tags
+    $text = strip_tags($content);
+    
+    // Trim and limit to specific length
+    $text = trim($text);
+    
+    if (strlen($text) > $length) {
+        $text = substr($text, 0, $length);
+        $text = substr($text, 0, strrpos($text, ' ')) . '...';
+    }
+    
+    return $text;
+}
+
+
+/**
  * Sanitize user input
  * 
  * @param string $data Data to sanitize

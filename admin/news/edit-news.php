@@ -43,6 +43,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $status = $_POST['status'];
   $featured = isset($_POST['featured']) ? 1 : 0;
   $breaking = isset($_POST['breaking']) ? 1 : 0;
+  
+  // Additional fields
+  $subtitle = trim($_POST['subtitle'] ?? '');
+  $excerpt = trim($_POST['excerpt'] ?? '');
+  $source = trim($_POST['source'] ?? '');
+  $source_url = trim($_POST['source_url'] ?? '');
+  $publish_date = !empty($_POST['publish_date']) ? $_POST['publish_date'] : date('Y-m-d H:i:s');
+  $tags = trim($_POST['tags'] ?? '');
+  
+  // SEO fields
+  $meta_title = trim($_POST['meta_title'] ?? '');
+  $meta_description = trim($_POST['meta_description'] ?? '');
+  $meta_keywords = trim($_POST['meta_keywords'] ?? '');
+  
+  // Social media
+  $social_title = trim($_POST['social_title'] ?? '');
+  $social_description = trim($_POST['social_description'] ?? '');
 
   // Upload new image if provided
   $image_path = $article['image']; // Keep existing image by default
@@ -68,10 +85,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $error_message = "File is not an image.";
     }
   }
+  
+  // Upload social image if provided
+  $social_image = $article['social_image'] ?? ''; // Keep existing social image by default
+  if (isset($_FILES['social_image']) && $_FILES['social_image']['error'] == 0) {
+    $upload_dir = '../../uploads/news-images/social/';
+    if (!file_exists($upload_dir)) {
+      mkdir($upload_dir, 0755, true);
+    }
+    
+    $image_name = time() . '_social_' . basename($_FILES['social_image']['name']);
+    $target_file = $upload_dir . $image_name;
+
+    // Check if image file is a valid image
+    $check = getimagesize($_FILES['social_image']['tmp_name']);
+    if ($check !== false) {
+      // Try to upload file
+      if (move_uploaded_file($_FILES['social_image']['tmp_name'], $target_file)) {
+        $social_image = 'uploads/news-images/social/' . $image_name;
+        // Delete old social image if exists
+        if (!empty($article['social_image']) && file_exists('../../' . $article['social_image'])) {
+          unlink('../../' . $article['social_image']);
+        }
+      } else {
+        $error_message = "Sorry, there was an error uploading the social media image.";
+      }
+    } else {
+      $error_message = "Social media file is not an image.";
+    }
+  }
 
   if (empty($error_message)) {
     // Update article in database
-    $result = updateArticle($conn, $article_id, $title, $content, $category_id, $image_path, $status, $featured, $breaking);
+    $result = updateArticleEnhanced(
+      $conn, 
+      $article_id,
+      $title, 
+      $content, 
+      $category_id, 
+      $image_path, 
+      $status, 
+      $featured, 
+      $breaking,
+      $subtitle,
+      $excerpt,
+      $source,
+      $source_url,
+      $publish_date,
+      $tags,
+      $meta_title,
+      $meta_description,
+      $meta_keywords,
+      $social_title,
+      $social_description,
+      $social_image
+    );
 
     if ($result) {
       $success_message = "Article successfully updated!";
@@ -94,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <!-- TinyMCE editor -->
-  <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+  <script src="https://cdn.tiny.cloud/1/2u3loz6azvlme3v7gibeawtm1ao7ylo096qdbp49ybl7a5aq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
   <script>
     tinymce.init({
       selector: '#content',
@@ -115,6 +183,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .sidebar-active {
       border-left: 4px solid #3B82F6;
       background-color: rgba(59, 130, 246, 0.1);
+    }
+    
+    .tab-active {
+      border-bottom: 2px solid #3B82F6;
+      color: #3B82F6;
     }
   </style>
   <?php include '../includes/style.php' ?>
@@ -138,7 +211,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <div class="flex-1 min-w-0">
                 <h1 class="text-2xl font-semibold text-gray-900">Edit Article</h1>
               </div>
-              <div class="mt-4 flex md:mt-0 md:ml-4">
+              <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+                <a href="view-news.php?id=<?php echo $article_id; ?>" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  <i class="fas fa-eye -ml-1 mr-2 h-5 w-5 text-gray-500"></i>
+                  View Details
+                </a>
                 <a href="manage-news.php" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                   <i class="fas fa-list -ml-1 mr-2 h-5 w-5 text-gray-500"></i>
                   Manage Articles
@@ -177,7 +254,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Edit Article Form -->
             <div class="bg-white shadow overflow-hidden sm:rounded-lg">
               <form method="POST" action="" enctype="multipart/form-data">
-                <div class="p-6 bg-white">
+                <!-- Form Tabs -->
+                <div class="bg-white border-b border-gray-200">
+                  <div class="sm:flex sm:items-baseline">
+                    <div class="mt-4 sm:mt-0">
+                      <nav class="-mb-px flex space-x-8">
+                        <a href="#" class="tab-link tab-active whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm" data-target="basic-info">
+                          Basic Information
+                        </a>
+                        <a href="#" class="tab-link whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="content-tab">
+                          Content
+                        </a>
+                        <a href="#" class="tab-link whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="seo-tab">
+                          SEO & Metadata
+                        </a>
+                        <a href="#" class="tab-link whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="social-tab">
+                          Social Media
+                        </a>
+                      </nav>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Basic Information Tab -->
+                <div id="basic-info" class="tab-content p-6 bg-white">
                   <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                     <div class="sm:col-span-6">
                       <label for="title" class="block text-sm font-medium text-gray-700">Article Title</label>
@@ -185,6 +285,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input type="text" name="title" id="title" value="<?php echo htmlspecialchars($article['title']); ?>"
                           class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" required>
                       </div>
+                    </div>
+
+                    <div class="sm:col-span-6">
+                      <label for="subtitle" class="block text-sm font-medium text-gray-700">Subtitle</label>
+                      <div class="mt-1">
+                        <input type="text" name="subtitle" id="subtitle" value="<?php echo isset($article['subtitle']) ? htmlspecialchars($article['subtitle']) : ''; ?>"
+                          class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                      </div>
+                      <p class="mt-1 text-xs text-gray-500">A secondary headline that provides additional context</p>
                     </div>
 
                     <div class="sm:col-span-3">
@@ -210,8 +319,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                           <option value="published" <?php echo ($article['status'] == 'published') ? 'selected' : ''; ?>>Published</option>
                           <option value="draft" <?php echo ($article['status'] == 'draft') ? 'selected' : ''; ?>>Draft</option>
                           <option value="pending" <?php echo ($article['status'] == 'pending') ? 'selected' : ''; ?>>Pending Review</option>
+                          <option value="scheduled" <?php echo ($article['status'] == 'scheduled') ? 'selected' : ''; ?>>Scheduled</option>
                         </select>
                       </div>
+                    </div>
+                    
+                    <div class="sm:col-span-3">
+                      <label for="publish_date" class="block text-sm font-medium text-gray-700">Publish Date & Time</label>
+                      <div class="mt-1">
+                        <input type="datetime-local" name="publish_date" id="publish_date" 
+                          value="<?php echo isset($article['publish_date']) ? date('Y-m-d\TH:i', strtotime($article['publish_date'])) : date('Y-m-d\TH:i', strtotime($article['created_at'])); ?>"
+                          class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                      </div>
+                      <p class="mt-1 text-xs text-gray-500">When scheduled, article will be published at this time</p>
+                    </div>
+                    
+                    <div class="sm:col-span-3">
+                      <label for="tags" class="block text-sm font-medium text-gray-700">Tags</label>
+                      <div class="mt-1">
+                        <input type="text" name="tags" id="tags" value="<?php echo isset($article['tags']) ? htmlspecialchars($article['tags']) : ''; ?>"
+                          placeholder="Tag1, Tag2, Tag3" 
+                          class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                      </div>
+                      <p class="mt-1 text-xs text-gray-500">Comma-separated list of tags</p>
                     </div>
 
                     <div class="sm:col-span-6">
@@ -253,16 +383,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                           </p>
                         </div>
                       </div>
+                      <p class="mt-1 text-xs text-gray-500">Recommended size: 1200 × 628 pixels</p>
                     </div>
-
-                    <div class="sm:col-span-6">
-                      <label for="content" class="block text-sm font-medium text-gray-700">
-                        Article Content
-                      </label>
+                    
+                    <div class="sm:col-span-3">
+                      <label for="source" class="block text-sm font-medium text-gray-700">Source Name</label>
                       <div class="mt-1">
-                        <textarea id="content" name="content" rows="10"
-                          class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"><?php echo htmlspecialchars($article['content']); ?></textarea>
+                        <input type="text" name="source" id="source" value="<?php echo isset($article['source']) ? htmlspecialchars($article['source']) : ''; ?>"
+                          class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                       </div>
+                      <p class="mt-1 text-xs text-gray-500">Original source of the content (if applicable)</p>
+                    </div>
+                    
+                    <div class="sm:col-span-3">
+                      <label for="source_url" class="block text-sm font-medium text-gray-700">Source URL</label>
+                      <div class="mt-1">
+                        <input type="url" name="source_url" id="source_url" value="<?php echo isset($article['source_url']) ? htmlspecialchars($article['source_url']) : ''; ?>"
+                          class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                      </div>
+                      <p class="mt-1 text-xs text-gray-500">Link to the original content (if applicable)</p>
                     </div>
 
                     <div class="sm:col-span-6">
@@ -295,23 +434,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   </div>
                 </div>
 
-                <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                  <button type="button" onclick="window.location='manage-news.php'"
-                    class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mr-2">
-                    Cancel
-                  </button>
-                  <button type="submit"
-                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    Update Article
-                  </button>
+                <!-- Content Tab -->
+                <div id="content-tab" class="tab-content p-6 bg-white hidden">
+                  <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                    <div class="sm:col-span-6">
+                      <label for="excerpt" class="block text-sm font-medium text-gray-700">
+                        Excerpt / Summary
+                      </label>
+                      <div class="mt-1">
+                        <textarea id="excerpt" name="excerpt" rows="3"
+                          class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"><?php echo isset($article['excerpt']) ? htmlspecialchars($article['excerpt']) : ''; ?></textarea>
+                      </div>
+                      <p class="mt-1 text-xs text-gray-500">A short summary of the article. If left empty, it will be automatically generated from the content.</p>
+                    </div>
+                    
+                    <div class="sm:col-span-6">
+                      <label for="content" class="block text-sm font-medium text-gray-700">
+                        Article Content
+                      </label>
+                      <div class="mt-1">
+                        <textarea id="content" name="content" rows="10"
+                          class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"><?php echo htmlspecialchars($article['content']); ?></textarea>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
-  </div>
-</body>
 
-</html>
+                <!-- SEO Tab -->
+                <div id="seo-tab" class="tab-content p-6 bg-white hidden">
+                  <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                    <div class="sm:col-span-6">
+                      <label for="meta_title" class="block text-sm font-medium text-gray-700">
+                        Meta Title
+                      </label>
+                      <div class="mt-1">
+                        <input type="text" name="meta_title" id="meta_title" value="<?php echo isset($article['meta_title']) ? htmlspecialchars($article['meta_title']) : ''; ?>"
+                          class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                      </div>
+                      <p class="mt-1 text-xs text-gray-500">Title tag for SEO. If left empty, the article title will be used.</p>
+                    </div>
+                    
+                    <div class="sm:col-span-6">
+                      <label for="meta_description" class="block text-sm font-medium text-gray-700">
+                        Meta Description
+                      </label>
+                      <div class="mt-1">
+                        <textarea id="meta_description" name="meta_description" rows="3"
+                          class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"><?php echo isset($article['meta_description']) ? htmlspecialchars($article['meta_description']) : ''; ?></textarea>
+                      </div>
+                      <p class="mt-1 text-xs text-gray-500">Description for search engines. Recommended length: 150-160 characters.</p>
+                    </div>
+                    
+                    <div class="sm:col-span-6">
+                      <label for="meta_keywords" class="block text-sm font-medium text-gray-700">
+                        Meta Keywords
+                      </label>
+                      <div class="mt-1">
+                        <input type="text" name="meta_keywords" id="meta_keywords" value="<?php echo isset($article['meta_keywords']) ? htmlspecialchars($article['meta_keywords']) : ''; ?>"
+                          placeholder="keyword1, keyword2, keyword3"
+                          class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                      </div>
+                      <p class="mt-1 text-xs text-gray-500">Comma-separated keywords (less important for modern SEO)</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Social Media Tab -->
+                <div id="social-tab" class="tab-content p-6 bg-white hidden">
+                  <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                    <div class="sm:col-span-6">
+                      <label for="social_title" class="block text-sm font-medium text-gray
