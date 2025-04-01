@@ -44,8 +44,8 @@ require_once 'includes/functions.php';
 
   <main class="container mx-auto px-4 mb-12">
     <!-- Featured Stories Section -->
-    <!-- Featured Stories Section -->
-    <section id="featured" class="mb-12 pt-8">
+<!-- Featured Stories Section -->
+<section id="featured" class="mb-12 pt-8">
       <div class="flex items-center justify-between mb-6" data-aos="fade-up" data-aos-duration="800">
         <h2 class="text-3xl font-bold text-gray-800">Featured Stories</h2>
         <a href="articles.php" class="text-blue-600 hover:text-blue-800 font-semibold transition duration-300">View All <i class="fas fa-chevron-right text-xs ml-1"></i></a>
@@ -84,8 +84,8 @@ require_once 'includes/functions.php';
             // Format date/time for display
             $time_ago = timeAgo($article['created_at']);
 
-            // Generate article URL - assuming article.php with slug parameter
-            $article_url = "article.php?slug=" . $article['slug'];
+            // Generate article URL - changed to articles.php with slug parameter
+            $article_url = "articles.php?slug=" . $article['slug'];
             $category_url = $article['category_slug'] . ".php";
 
             // Image path with fallback
@@ -171,8 +171,8 @@ require_once 'includes/functions.php';
               // Get article image or use placeholder
               $image_path = !empty($article['image']) ? $article['image'] : "/api/placeholder/120/120";
 
-              // Create article URL
-              $article_url = "article.php?slug=" . $article['slug'];
+              // Create article URL - changed to articles.php
+              $article_url = "articles.php?slug=" . $article['slug'];
 
               // Get short excerpt for preview
               $excerpt = limitWords(strip_tags($article['content']), 15);
@@ -224,8 +224,8 @@ require_once 'includes/functions.php';
               // Get article image or use placeholder
               $image_path = !empty($article['image']) ? $article['image'] : "/api/placeholder/120/120";
 
-              // Create article URL
-              $article_url = "article.php?slug=" . $article['slug'];
+              // Create article URL - changed to articles.php
+              $article_url = "articles.php?slug=" . $article['slug'];
 
               // Get short excerpt for preview
               $excerpt = limitWords(strip_tags($article['content']), 15);
@@ -255,7 +255,6 @@ require_once 'includes/functions.php';
         </div>
       </div>
     </section>
-
     <!-- Categories Section -->
     <section id="categories" class="mb-12">
       <h2 class="text-3xl font-bold text-gray-800 mb-6" data-aos="fade-up" data-aos-duration="800">Browse Categories</h2>
